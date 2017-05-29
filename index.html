@@ -2,13 +2,52 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Wood Cuts</title>
-  <link rel="stylesheet" href="resources/css/main.css">
+ 	<meta charset="utf-8">
+	<title>Wood Cuts</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="resources/css/main.css">
+	
 
 </head>
 
 <body>
+	
+	<h1>Wood Cuts</h1>
+	<p>Info about the app here. Blah blah blah...</p>
+	
+	
+	<hr>
+	
+	<h3>Stock</h3>
+	<p>Enter the length of the stock board that cuts will be made from.<p>
+	<div class="form-inline">
+		<label class="input-group">Length:</label>
+		<input type="text" class="form-control " id="stockLength">
+		  <select class="form-control" id="stockUnit">
+			<option>Inches</option>
+			<option>Feet</option>
+		  </select>
+	</div>
+	<h3 class="cut-lengths-desc">Boards</h3>
+	<p> Enter the different lengths of the desired board pieces.</p>
+	
+	<div class="form-inline">
+		<label class="input-group">Length:</label>
+		<input type="text" class="form-control " id="cutLength">
+		  <select class="form-control" id="cutUnit">
+			<option>Inches</option>
+			<option>Feet</option>
+		  </select>
+	</div>
+	
+	
+	
+	
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
   <script src="resources/js/app.js"></script>
 </body>
 </html>
