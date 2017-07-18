@@ -7,8 +7,6 @@ var Calculation = function(){
 	
 	
 	
-	
-	
 };
 
 
