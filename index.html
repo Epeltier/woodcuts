@@ -8,14 +8,22 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="resources/css/main.css">
 	
-
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  	<script src="app.js"></script>
+	<script src="resources/js/objects.js"></script>
 </head>
 
-<body>
+<body ng-app="cutsApp">
 	
+
+	
+	
+	<div ng-controller="PageCtrl">
 	<h1>Wood Cuts</h1>
 	<p>Info about the app here. Blah blah blah...</p>
-	
+	{{pageMessage}}
 	
 	<hr>
 	
@@ -23,31 +31,49 @@
 	<p>Enter the length of the stock board that cuts will be made from.<p>
 	<div class="form-inline">
 		<label class="input-group">Length:</label>
-		<input type="text" class="form-control " id="stockLength">
-		  <select class="form-control" id="stockUnit">
-			<option>Inches</option>
-			<option>Feet</option>
+		<input type="text" class="form-control " ng-model="stock" id="stockLength">
+		  <select class="form-control" ng-model="boardUnit" id="stockUnit" ng-options="unit.name for unit in unitOptions">
+
 		  </select>
 	</div>
+	<p class="error-message" ng-show="stockError">{{stockError}}</p>
 	<h3 class="cut-lengths-desc">Boards</h3>
 	<p> Enter the different lengths of the desired board pieces.</p>
 	
 	<div class="form-inline">
 		<label class="input-group">Length:</label>
-		<input type="text" class="form-control " id="cutLength">
+		<input type="text" class="form-control" ng-model="cutLength" id="cutLength">
 		  <select class="form-control" id="cutUnit">
 			<option>Inches</option>
 			<option>Feet</option>
 		  </select>
+		<label class="input-group label-margin">  Quantity:</label>
+		<input type="text" class="form-control length-input" ng-model="cutQuantity" id="cutQuantity">
+		
+	
+		<button type="button" class="btn btn-success" ng-click="addCut()">
+		  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add
+		</button>
+		<p class="error-message" ng-show="cutsError">{{cutsError}}</p>
+		
+		<h4 ng-show="cuts.length>0">Board Cuts: </h4>
+		<h4 ng-repeat="x in cuts" class="indent-1">	{{x}}</h4>
+		
+		
+	</div>
+	
+	<br>
+	
+	<button type="button" class="btn btn-default btn-lg" ng-click="calculateCuts()">
+	  Calculate Cuts
+	</button>
+	
+	<br>
 	</div>
 	
 	
 	
-	
-	
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	
-  <script src="resources/js/app.js"></script>
+	<visualize-cuts ng-show="calculationsDone" />
+
 </body>
 </html>

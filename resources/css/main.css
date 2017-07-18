@@ -1,12 +1,23 @@
 
 .length-input{
-	width:3em;	
+	width:3em; 
 }
 
 body{
 	margin-left:5%;	
 }
 
+.error-message{
+	color:red;
+	font-weight:bold;
+}
+
 .cut-lengths-desc{
-	margin-top:3em;	
+	margin-top:2em;	
+}
+.label-margin{
+	margin-left:.5em;
+}
+.indent-1{
+	text-indent:1em;
 }
