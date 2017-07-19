@@ -1,0 +1,34 @@
+<div>
+	
+	<h3>Calculated Cutting Pattern</h3>
+
+	
+	<!--
+	//total length of cuts
+	//total number of boards
+	//total length of waste
+
+	-->
+	
+	
+	<!--
+	-ng repeat for each board
+		-within that, ng-repeat for each cut
+	-->
+	
+	<div style="width:1000px;">
+		<div ng-repeat="board in boards">
+
+			<p>Testing</p>
+
+
+			<div ng-repeat="cut in board.cuts" ng-style="getStyle(cut)">{{cut}}</div>
+
+
+
+		</div>
+	
+	</div>
+	
+	
+</div>

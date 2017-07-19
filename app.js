@@ -11,10 +11,10 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
       {name:'Feet', unit:'12'}
     ];
 	
+	$scope.cutUnit = $scope.unitOptions[0];
+	$scope.stockUnit=$scope.unitOptions[0];
 	
-	$scope.boardUnit=$scope.unitOptions[0];
-	
-	$scope.calculationsDone=false; 
+	$scope.calculationsDone=true; 
 
 
 	
@@ -31,7 +31,7 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 		
 		if(!hasErrors){
 			//add new cut
-			var cut = new Cut($scope.cutLength,2, $scope.cutQuantity);
+			var cut = new Cut($scope.cutLength,$scope.cutUnit, $scope.cutQuantity);
 			$scope.cuts.push(cut);
 		}
 	};
@@ -93,12 +93,10 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 	
 	$scope.calculateCuts = function(){
 		
-		console.log($scope.boardUnit);
-		
 		if(!$scope.checkForErrors()){
 			//proceed with calculation
 			
-			var board = new Board();
+			var stock = new Stock($scope.stock, $scope.stockUnit);
 			
 			
 			
@@ -122,7 +120,7 @@ app.service('calculationService', function () {
   }
 	
 	
-	this.calculateCuts = function(boards, cuts){
+	this.calculateCuts = function(stock, cuts){
 		
 		
 		return '';
@@ -139,18 +137,52 @@ app.service('calculationService', function () {
 app.directive('visualizeCuts', function() {
 	
 	
-	 var controller = function () {
+	 var controller = function ($scope) {
           
 			var test='test';
+			$('#testRect').width('100px');
+		 
+		 
+		 
+		 $scope.boards = [];
+		 
+		 for(var i=0;i<4;i++){
+			 
+			var b = new Board();
+			 
+			 $scope.boards.push(b);
+		 }
+		 
+		 
+		 $scope.getStyle = function(cut){
 
+			 
+			 return {
+				"width":"400px",
+				"height":"100px",
+				"border":"1px solid #000",
+				"display": "table-cell"
+			 };
+			
+		 };
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
       };    
 	
 
 	  return {
 		  restrict: 'E',
 		  controller:controller,
+		  scope:{},
 		  replace: 'true',
-		  template: '<h3>This Is visualization directive!!</h3>'
+		  templateUrl: 'resources/partials/visualizationTemplate.html'
 	  };
 });
 

@@ -32,7 +32,7 @@
 	<div class="form-inline">
 		<label class="input-group">Length:</label>
 		<input type="text" class="form-control " ng-model="stock" id="stockLength">
-		  <select class="form-control" ng-model="boardUnit" id="stockUnit" ng-options="unit.name for unit in unitOptions">
+		  <select class="form-control" ng-model="stockUnit" id="stockUnit" ng-options="unit.name for unit in unitOptions">
 
 		  </select>
 	</div>
@@ -43,9 +43,7 @@
 	<div class="form-inline">
 		<label class="input-group">Length:</label>
 		<input type="text" class="form-control" ng-model="cutLength" id="cutLength">
-		  <select class="form-control" id="cutUnit">
-			<option>Inches</option>
-			<option>Feet</option>
+		  <select class="form-control" id="cutUnit" ng-model="cutUnit" ng-options="unit.name for unit in unitOptions">
 		  </select>
 		<label class="input-group label-margin">  Quantity:</label>
 		<input type="text" class="form-control length-input" ng-model="cutQuantity" id="cutQuantity">
@@ -73,7 +71,7 @@
 	
 	
 	
-	<visualize-cuts ng-show="calculationsDone" />
+	<visualize-cuts />
 
 </body>
 </html>
