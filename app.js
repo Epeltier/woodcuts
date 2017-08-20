@@ -14,12 +14,8 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 	$scope.cutUnit = $scope.unitOptions[0];
 	$scope.stockUnit=$scope.unitOptions[0];
 	
-	$scope.calculationsDone=true; 
+	$scope.calculationsDone=false; 
 
-
-	
-	
-	
 	$scope.stock=undefined; 
 	
 	$scope.cuts=[];
@@ -97,7 +93,9 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 			//proceed with calculation
 			
 			var stock = new Stock($scope.stock, $scope.stockUnit);
+			//$scope.cuts
 			
+			calculationService.calculateCuts(stock,$scope.cuts);
 			
 			
 			$scope.calculationsDone=true;
@@ -105,6 +103,23 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 		}
 		
 	
+	}
+	
+	
+	$scope.displayCuts = function(calculationSolution){
+		
+		if(calculationSolution.success){
+			//calculation succeeded
+			
+			//show the result
+			
+		}
+		else{
+			$scope.calculationError=calculationSolution.message; 
+			
+		}
+		
+		
 	}
 	
 });
@@ -119,18 +134,58 @@ app.service('calculationService', function () {
     return !show;
   }
 	
-	
-	this.calculateCuts = function(stock, cuts){
+	this.calculateCuts = function(stock, cuts){	
+		
+		//TODO- 
+		//iterate through every complete board combo - determine solution. 
 		
 		
-		return '';
+		//simple solution for testing. just place all cuts in a row.
+		
+		console.log(stock);
+		
+		console.log(cuts);
+		
+		
+		getNormalizedCutsArray(cuts);
 		
 		
 		
+		
+		
+		
+		
+		
+		
+		return '';	
 	}
 	
 	
+	function normalizeLength(unit, length){
+		return unit.unit*length; 
+	}
 	
+	function getNormalizedCutsArray(cuts){
+	
+		var normalizedCuts=[];
+		
+		for(var i=0;i<cuts.length;i++){
+			
+			//add quantity of cuts
+			var normalizedLength = normalizeLength(cuts[i].unit,cuts[i].length);
+			
+			for(var j=0;j<cuts[i].quantity;j++){
+				normalizedCuts.push(normalizedLength);
+			}
+		}
+		//for ...
+		// normalizedCuts.push(cut);
+		
+		console.log(normalizedCuts);
+		
+	}
+	
+
 });
 
 
@@ -138,11 +193,13 @@ app.directive('visualizeCuts', function() {
 	
 	
 	 var controller = function ($scope) {
-          
-			var test='test';
-			$('#testRect').width('100px');
 		 
 		 
+		 $scope.stockSize=8;
+		 $scope.stockUnit=12;
+		 
+		 
+		 $scope.totalBoardWidth = $scope.stockSize * $scope.stockUnit;
 		 
 		 $scope.boards = [];
 		 
@@ -154,33 +211,38 @@ app.directive('visualizeCuts', function() {
 		 }
 		 
 		 
-		 $scope.getStyle = function(cut){
-
+		 $scope.getStyle = function(board, cut,isExtra){
+			
 			 
-			 return {
-				"width":"400px",
+			 var percentOfBoard = cut / $scope.totalBoardWidth;
+			 
+			 var cutWidthPercent = percentOfBoard * 100;
+			 
+			 var styleValues= {
 				"height":"100px",
 				"border":"1px solid #000",
-				"display": "table-cell"
+				"float": "left"
 			 };
+			 var cutWidth = cutWidthPercent.toString() + '%';
+			 styleValues.width = cutWidth; 
+			 
+			 if(isExtra){
+				styleValues.background = "#36486b";	 
+			 }
+			 else{
+				 styleValues.background = "#618685";
+			 }
+			 
+			return styleValues; 
 			
 		 };
 		 
-		 
-		 
-		 
-		 
-		 
-		 
-		 
-		 
       };    
 	
-
 	  return {
 		  restrict: 'E',
 		  controller:controller,
-		  scope:{},
+		  scope:{solution:'=solution'},
 		  replace: 'true',
 		  templateUrl: 'resources/partials/visualizationTemplate.html'
 	  };

@@ -21,3 +21,13 @@ body{
 .indent-1{
 	text-indent:1em;
 }
+.clear-after{
+	clear:left;
+}
+.boards-container{
+	width:50%;
+	min-width:600px;
+}
+.calcuation-error{
+	color:red;	
+}

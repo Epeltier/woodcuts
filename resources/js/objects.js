@@ -3,7 +3,10 @@ var CalculationSolution = function(){
 	this.success;
 	this.message;
 	this.boards=[];
-	
+	this.stockSize;
+	this.stockUnit;
+	this.totalCutsLength;
+	this.wasteLength; 
 	
 };
 
@@ -11,11 +14,9 @@ var CalculationSolution = function(){
 
 
 var Board = function(){
-	this.stockSize;
-	this.cuts=["1","2","3"];
-	this.spaceLeft=0;
 	
-	
+	this.cuts=["40","20","30"];
+	this.spaceLeft=6;
 	
 };
 
