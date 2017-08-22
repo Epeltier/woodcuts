@@ -95,9 +95,7 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 			var stock = new Stock($scope.stock, $scope.stockUnit);
 			//$scope.cuts
 			
-			calculationService.calculateCuts(stock,$scope.cuts);
-			
-			
+			$scope.boards = calculationService.calculateCuts(stock,$scope.cuts);
 			$scope.calculationsDone=true;
 			
 		}
@@ -110,7 +108,7 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 		
 		if(calculationSolution.success){
 			//calculation succeeded
-			
+			$scope.calculationsDone=true;
 			//show the result
 			
 		}
@@ -136,30 +134,58 @@ app.service('calculationService', function () {
 	
 	this.calculateCuts = function(stock, cuts){	
 		
-		//TODO- 
+		var normalizedCuts = getNormalizedCutsArray(cuts);
+		var normalizedStock = normalizeLength(stock.unit, stock.length);
+		var totalCutsLength = normalizedCuts.reduce(getSum);
+			
 		//iterate through every complete board combo - determine solution. 
 		
 		
-		//simple solution for testing. just place all cuts in a row.
+		//check number of boards for solution
+		var solnBoards = createBoardSolution(normalizedCuts, normalizedStock);
 		
-		console.log(stock);
-		
-		console.log(cuts);
-		
-		
-		getNormalizedCutsArray(cuts);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		return '';	
+		var totalWaste = findBoardsWaste(solnBoards);
+
+		return solnBoards;
 	}
 	
+	function getSum(total, num) {
+    	return total + num;
+	}
+	
+	function findBoardsWaste(boards){
+		var waste = 0; 
+		
+		for(var i =0;i<boards.length;i++){
+			waste+=boards[i].spaceLeft;
+		}
+		return waste; 
+	}
+	
+	
+	function createBoardSolution(cuts, stockLength){
+		
+		var boards = [];
+		
+		var board = new Board(stockLength);
+		
+		for(var i =0;i<cuts.length;i++){
+			
+			if(cuts[i]<=board.spaceLeft){
+				board.addCut(cuts[i]);
+			}
+			else{
+				boards.push(board);
+				board = new Board(stockLength);
+				board.addCut(cuts[i]);
+			}
+		}
+		
+		boards.push(board);
+		
+		return boards;
+	}
+
 	
 	function normalizeLength(unit, length){
 		return unit.unit*length; 
@@ -168,9 +194,7 @@ app.service('calculationService', function () {
 	function getNormalizedCutsArray(cuts){
 	
 		var normalizedCuts=[];
-		
-		for(var i=0;i<cuts.length;i++){
-			
+		for(var i=0;i<cuts.length;i++){	
 			//add quantity of cuts
 			var normalizedLength = normalizeLength(cuts[i].unit,cuts[i].length);
 			
@@ -178,11 +202,7 @@ app.service('calculationService', function () {
 				normalizedCuts.push(normalizedLength);
 			}
 		}
-		//for ...
-		// normalizedCuts.push(cut);
-		
-		console.log(normalizedCuts);
-		
+		return normalizedCuts; 
 	}
 	
 
@@ -198,18 +218,10 @@ app.directive('visualizeCuts', function() {
 		 $scope.stockSize=8;
 		 $scope.stockUnit=12;
 		 
-		 
+		 $scope.boards = $scope.solution;
 		 $scope.totalBoardWidth = $scope.stockSize * $scope.stockUnit;
-		 
-		 $scope.boards = [];
-		 
-		 for(var i=0;i<4;i++){
-			 
-			var b = new Board();
-			 
-			 $scope.boards.push(b);
-		 }
-		 
+		
+		 console.log($scope.solution);
 		 
 		 $scope.getStyle = function(board, cut,isExtra){
 			
