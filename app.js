@@ -99,10 +99,7 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 			$scope.calculationsDone=true;
 			
 		}
-		
-	
 	}
-	
 	
 	$scope.displayCuts = function(calculationSolution){
 		
@@ -115,9 +112,7 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 		else{
 			$scope.calculationError=calculationSolution.message; 
 			
-		}
-		
-		
+		}	
 	}
 	
 });
@@ -132,22 +127,73 @@ app.service('calculationService', function () {
     return !show;
   }
 	
-	this.calculateCuts = function(stock, cuts){	
+	var permutedValues=[];
+	
+	
+	this.calculateCuts = function(stock, cuts){
+		
+	
+		var normalizedCuts = getNormalizedCutsArray(cuts);
+		var normalizedStock = normalizeLength(stock.unit, stock.length);
+		var totalCutsLength = normalizedCuts.reduce(getSum);
+		//sort all decreasing order.
+		normalizedCuts.sort(function(a, b){return b - a});
+		
+		
+		console.log(normalizedCuts);
+		var boards = createFitFirstDecreasingBoardSolution(normalizedCuts, normalizedStock);
+		
+		var totalWaste = findBoardsWaste(boards);
+		//create CalculationSolution
+
+		console.log(boards);
+		console.log(totalWaste);
+		
+		return boards;
+		
+		
+		
+	}
+	
+	this.calculateCuts2 = function(stock, cuts){	
+		
+		/*
 		
 		var normalizedCuts = getNormalizedCutsArray(cuts);
 		var normalizedStock = normalizeLength(stock.unit, stock.length);
 		var totalCutsLength = normalizedCuts.reduce(getSum);
 			
-		//iterate through every complete board combo - determine solution. 
+		//iterate through every complete board combo - determine solution. 	
+		var cutPermutations = permutator(normalizedCuts);
+		console.log('done generating permutations');
+		console.log(cutPermutations);
 		
-		
-		//check number of boards for solution
-		var solnBoards = createBoardSolution(normalizedCuts, normalizedStock);
-		
-		var totalWaste = findBoardsWaste(solnBoards);
+		//ensure first viable solution considered
+		var bestSolutionLength =normalizedCuts.length+1; 
+		var bestSolution; 
+		//for each solution
 
-		return solnBoards;
+		for(var k =0;k<cutPermutations.length;k++){
+			var solutionBoards = createBoardSolution(cutPermutations[k], normalizedStock);
+
+			if(solutionBoards.length <bestSolutionLength){
+				bestSolution=solutionBoards;
+				bestSolutionLength = solutionBoards.length; 
+			}
+		}
+
+		var totalWaste = findBoardsWaste(bestSolution);
+		//create CalculationSolution
+
+		console.log(totalWaste);
+		
+		return bestSolution;
+	
+	*/
 	}
+	
+
+	
 	
 	function getSum(total, num) {
     	return total + num;
@@ -161,14 +207,69 @@ app.service('calculationService', function () {
 		}
 		return waste; 
 	}
+
+	function permutator(inputArr) {
+	  var results = [];
+
+	  function permute(arr, memo) {
+		var cur, memo = memo || [];
+		  
+		for (var i = 0; i < arr.length; i++) {
+		  cur = arr.splice(i, 1);
+		  if (arr.length === 0) {
+			results.push(memo.concat(cur));
+		  }
+		
+		var newArr = arr.slice();
+		var newMemo = memo.concat(cur);
+	//	if(!checkIfInList(newArr,newMemo)){
+			
+			//avoid page hanging on long permutations
+			/*
+			setTimeout(function(){
+				permute(newArr,newMemo);
+			},0);
+			*/
+		permute(newArr, newMemo);
+		//}
+
+		arr.splice(i, 0, cur[0]);
+		}
+		return results;
+	  }
+	  return permute(inputArr);
+	}
 	
+	
+	function checkIfInList(arr,mem){
+		return false;
+		for(var q=0;q<permutedValues.length;q++){
+			if(arraysEqual(permutedValues[q].arr,arr) && arraysEqual(permutedValues[q].mem,mem)){
+				return true;
+			}
+		}
+		//add to permutedValues
+		permutedValues.push({arr:arr,mem:mem});
+		return false; 
+		
+	}
+	
+	function arraysEqual(a, b) {
+		  if (a === b) return true;
+		  if (a == null || b == null) return false;
+		  if (a.length != b.length) return false;
+
+		  for (var i = 0; i < a.length; ++i) {
+			if (a[i] !== b[i]) return false;
+		  }
+		  return true;
+		}
+
 	
 	function createBoardSolution(cuts, stockLength){
 		
 		var boards = [];
-		
 		var board = new Board(stockLength);
-		
 		for(var i =0;i<cuts.length;i++){
 			
 			if(cuts[i]<=board.spaceLeft){
@@ -180,9 +281,34 @@ app.service('calculationService', function () {
 				board.addCut(cuts[i]);
 			}
 		}
-		
 		boards.push(board);
+		return boards;
+	}
+	
+	
+	function createFitFirstDecreasingBoardSolution(cuts, stockLength){
 		
+		var boards = [];
+		var board = new Board(stockLength);
+		boards.push(board);
+		var cutAdded = false; 
+		for(var i =0;i<cuts.length;i++){
+			cutAdded=false; 
+			for(var j =0;j<boards.length;j++){
+				
+				if(cuts[i]<=boards[j].spaceLeft){
+					boards[j].addCut(cuts[i]);
+					cutAdded = true; 
+				}
+			}
+			
+			if(!cutAdded){
+				var board = new Board(stockLength);
+				board.addCut(cuts[i]);
+				boards.push(board);
+			}
+		}
+
 		return boards;
 	}
 
@@ -214,7 +340,7 @@ app.directive('visualizeCuts', function() {
 	
 	 var controller = function ($scope) {
 		 
-		 
+
 		 $scope.stockSize=8;
 		 $scope.stockUnit=12;
 		 
@@ -225,9 +351,7 @@ app.directive('visualizeCuts', function() {
 		 
 		 $scope.getStyle = function(board, cut,isExtra){
 			
-			 
 			 var percentOfBoard = cut / $scope.totalBoardWidth;
-			 
 			 var cutWidthPercent = percentOfBoard * 100;
 			 
 			 var styleValues= {
