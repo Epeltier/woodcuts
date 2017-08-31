@@ -31,3 +31,10 @@ body{
 .calcuation-error{
 	color:red;	
 }
+
+.wood-grain{
+	background: url('../img/wood.jpg');
+	background-size: 100% auto;
+    height:100px;
+    width:100%;
+}

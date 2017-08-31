@@ -21,30 +21,38 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 	$scope.cuts=[];
 	
 	
-	$scope.addCut = function(){
+	$scope.addCut = function(silenceErrors){
+		
+		
 		$scope.calculationsDone=false;
-		var hasErrors = $scope.checkForCutErrors($scope.cutLength, $scope.cutQuantity);
+		var hasErrors = $scope.checkForCutErrors($scope.cutLength, $scope.cutQuantity, silenceErrors);
 		
 		if(!hasErrors){
 			//add new cut
 			var cut = new Cut($scope.cutLength,$scope.cutUnit, $scope.cutQuantity);
 			$scope.cuts.push(cut);
+			$scope.cutQuantity='';
+			$scope.cutLength='';
 		}
 	};
 	
 	
-	$scope.checkForCutErrors = function(cutLength, cutQuantity){
+	$scope.checkForCutErrors = function(cutLength, cutQuantity, silenceErrors){
 		var errorsFound = false;
 		
-		
+		var cutsError='';
 		if(!(!isNaN(cutLength) && angular.isNumber(+cutLength) && cutLength>0)) {
-			$scope.cutsError="Please specify a valid cut length";
+			cutsError="Please specify a valid cut length";
 			errorsFound=true;
 		}
 		
 		if(!(!isNaN(cutQuantity) && angular.isNumber(+cutQuantity) && cutQuantity>0)) {
-			$scope.cutsError="Please specify a valid cut quantity";
+			cutsError="Please specify a valid cut quantity";
 			errorsFound=true;
+		}
+		
+		if(!silenceErrors){
+			$scope.cutsError = cutsError; 	
 		}
 		
 		
@@ -89,14 +97,21 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 	
 	$scope.calculateCuts = function(){
 		
+		//add any unadded cuts
+		$scope.addCut(true);
+		
 		if(!$scope.checkForErrors()){
 			//proceed with calculation
 			
 			var stock = new Stock($scope.stock, $scope.stockUnit);
 			//$scope.cuts
 			
-			$scope.boards = calculationService.calculateCuts(stock,$scope.cuts);
+			$scope.solution = calculationService.calculateCuts(stock,$scope.cuts);
 			$scope.calculationsDone=true;
+			
+			console.log($scope.solution);
+			
+			
 			
 		}
 	}
@@ -132,26 +147,19 @@ app.service('calculationService', function () {
 	
 	this.calculateCuts = function(stock, cuts){
 		
-	
 		var normalizedCuts = getNormalizedCutsArray(cuts);
 		var normalizedStock = normalizeLength(stock.unit, stock.length);
 		var totalCutsLength = normalizedCuts.reduce(getSum);
 		//sort all decreasing order.
 		normalizedCuts.sort(function(a, b){return b - a});
 		
-		
-		console.log(normalizedCuts);
 		var boards = createFitFirstDecreasingBoardSolution(normalizedCuts, normalizedStock);
 		
 		var totalWaste = findBoardsWaste(boards);
 		//create CalculationSolution
 
-		console.log(boards);
-		console.log(totalWaste);
-		
-		return boards;
-		
-		
+		var solution = new CalculationSolution(true, 'success', boards, normalizedStock, totalCutsLength, totalWaste);
+		return solution;
 		
 	}
 	
@@ -193,8 +201,6 @@ app.service('calculationService', function () {
 	}
 	
 
-	
-	
 	function getSum(total, num) {
     	return total + num;
 	}
@@ -222,16 +228,17 @@ app.service('calculationService', function () {
 		
 		var newArr = arr.slice();
 		var newMemo = memo.concat(cur);
-	//	if(!checkIfInList(newArr,newMemo)){
+		/*
+		if(!checkIfInList(newArr,newMemo)){
 			
 			//avoid page hanging on long permutations
-			/*
+			
 			setTimeout(function(){
 				permute(newArr,newMemo);
 			},0);
-			*/
+		}
+		*/
 		permute(newArr, newMemo);
-		//}
 
 		arr.splice(i, 0, cur[0]);
 		}
@@ -242,7 +249,6 @@ app.service('calculationService', function () {
 	
 	
 	function checkIfInList(arr,mem){
-		return false;
 		for(var q=0;q<permutedValues.length;q++){
 			if(arraysEqual(permutedValues[q].arr,arr) && arraysEqual(permutedValues[q].mem,mem)){
 				return true;
@@ -340,34 +346,37 @@ app.directive('visualizeCuts', function() {
 	
 	 var controller = function ($scope) {
 		 
-
-		 $scope.stockSize=8;
-		 $scope.stockUnit=12;
-		 
-		 $scope.boards = $scope.solution;
-		 $scope.totalBoardWidth = $scope.stockSize * $scope.stockUnit;
+		 $scope.getSpaceLeft = function(spaceLeft){
 		
-		 console.log($scope.solution);
+			 if(spaceLeft>0){
+				 return spaceLeft;
+			 }
+			 return '';
+		 }
+		 
+		 $scope.getBoardNumber = function(index){
+			 var boardCount = index+1;
+			return 'Board ' + boardCount;  
+		 }
 		 
 		 $scope.getStyle = function(board, cut,isExtra){
 			
-			 var percentOfBoard = cut / $scope.totalBoardWidth;
+			 var percentOfBoard = cut / $scope.solution.stockSize;
 			 var cutWidthPercent = percentOfBoard * 100;
 			 
 			 var styleValues= {
 				"height":"100px",
 				"border":"1px solid #000",
-				"float": "left"
+				"float": "left",
 			 };
 			 var cutWidth = cutWidthPercent.toString() + '%';
 			 styleValues.width = cutWidth; 
 			 
 			 if(isExtra){
-				styleValues.background = "#36486b";	 
+				styleValues.background = "white";	 
+				styleValues.opacity=".5";
 			 }
-			 else{
-				 styleValues.background = "#618685";
-			 }
+
 			 
 			return styleValues; 
 			

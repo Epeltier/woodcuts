@@ -2,27 +2,19 @@
 	
 	<h3>Optimized Cutting Pattern</h3>
 
-	<p>Total </p>
-	<!--
-	//total length of cuts
-	//total number of boards
-	//total length of waste
-
-	-->
-	{{solution}}
-	
-	<!--
-	-ng repeat for each board
-		-within that, ng-repeat for each cut
-	-->
+	<p>Number of boards: {{solution.boards.length}}</p>
+	<p>Length of cuts: {{solution.totalCutsLength}} inchess</p>
+	<p>Length of board waste: {{solution.wasteLength}} inches</p>
+	<p></p>
 	
 	<div id="boardsContainer" class="boards-container">
-		<div ng-repeat="board in boards" class="clear-after">
-
-			<p>Testing</p>
-
-			<div class="cut-board" ng-repeat="cut in board.cuts" ng-style="getStyle(board,cut)">{{cut}}</div>
-			<div class="extra-board" ng-style="getStyle(board,board.spaceLeft,true)"/>
+		<div ng-repeat="board in solution.boards" class="clear-after">
+			
+				<p>{{getBoardNumber($index)}}</p>
+			<div class="wood-grain">
+				<div class="cut-board" ng-repeat="cut in board.cuts track by $index" ng-style="getStyle(board,cut)">{{cut}}</div>
+				<div class="extra-board" ng-style="getStyle(board,board.spaceLeft,true)" ng-show="board.spaceLeft>0">{{getSpaceLeft(board.spaceLeft)}}</div>
+			</div>
 		</div>
 	
 	</div>
