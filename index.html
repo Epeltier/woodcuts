@@ -18,7 +18,8 @@
 <body ng-app="cutsApp">
 	<div ng-controller="PageCtrl">
 		<h1>Wood Cuts</h1>
-		<p>Info about the app here. Blah blah blah...</p>
+		
+		<p>This tool is intended to assist with generating a cutting pattern for making multiple length cuts of wood for a project. It will determine an efficient layout to reduce the wasted wood. The 'first-fit decreasing' algorithm is implemented. More about the tool and its implementation can be found <a href="https://github.com/Epeltier/woodcuts/blob/master/readme.md">here</a>.</p>
 		{{pageMessage}}
 
 		<hr>
@@ -60,6 +61,9 @@
 
 		<button type="button" class="btn btn-primary btn-lg" ng-click="calculateCuts()">
 		  Calculate Cuts
+		</button>
+		<button type="button" class="btn btn-basic btn-lg" ng-click="reset()">
+		  Reset
 		</button>
 <hr>
 		<br>

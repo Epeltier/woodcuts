@@ -20,6 +20,16 @@ app.controller('PageCtrl', function ($scope, $location, $http, calculationServic
 	
 	$scope.cuts=[];
 	
+	$scope.reset = function(){
+		
+		$scope.calculationsDone=false; 
+		$scope.stock=undefined; 
+		$scope.cuts=[];
+		$scope.solution=undefined;
+		$scope.cutsError='';
+		$scope.cutQuantity='';
+		$scope.cutLength='';
+	}
 	
 	$scope.addCut = function(silenceErrors){
 		
@@ -146,6 +156,7 @@ app.service('calculationService', function () {
 	
 	
 	this.calculateCuts = function(stock, cuts){
+		permutedValues=[];
 		
 		var normalizedCuts = getNormalizedCutsArray(cuts);
 		var normalizedStock = normalizeLength(stock.unit, stock.length);
